@@ -21,4 +21,9 @@ public class Apple implements IMapElement{
     public List<Vector2d> occupiedSpace() {
         return List.of(position);
     }
+
+    @Override
+    public String toString() {
+        return "Apple" + position;
+    }
 }

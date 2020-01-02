@@ -9,10 +9,12 @@ import visualization.Icon;
 
 public class Tile extends ImageView {
     private Tooltip tooltip;
+    private Vector2d position;
 
     public Tile(int edge, Vector2d position) {
         this.setFitWidth(edge);
         this.setFitHeight(edge);
+        this.position = position;
         setImage(Icon.GRASS.img);
         tooltip = new Tooltip(position.toString());
         tooltip.setShowDelay(Duration.ZERO);
@@ -22,10 +24,13 @@ public class Tile extends ImageView {
     }
 
     public void update(IMapElement mapElement){
-        if(mapElement == null)
+        if(mapElement == null){
             this.setImage(Icon.GRASS.img);
+            tooltip.setText(position.toString());
+        }
         else {
             this.setImage(mapElement.getIcon().img);
+            tooltip.setText(mapElement.toString());
         }
     }
 }

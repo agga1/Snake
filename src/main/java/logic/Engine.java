@@ -7,9 +7,7 @@ import objects.Map;
 import objects.Obstacle;
 import objects.Snake;
 import utils.Direction;
-import utils.Rect;
 import utils.Vector2d;
-import visualization.map.MapPane;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +16,11 @@ public class Engine implements MapObserver{
     private Snake snake;
     private Map map;
     private List<Observer> observers = new ArrayList<>();
-    private boolean alive = true;
+    private boolean paused = false;
     private int progress = 0;
-    private int currLvl = 0;
+    private int currLvl = 1;
+    private int speed = 30;
+
     private int width = 20;
     private int height = 20;
 
@@ -29,21 +29,28 @@ public class Engine implements MapObserver{
         snake = new Snake(map);
     }
     public void initialize(){
+        paused = true;
         map.placeElement(snake);
         Obstacle obstacle = Levels.getInstance().getLevel(currLvl);
         map.placeElement(obstacle);
         map.onGrowApple();
-        map.getRect().toVectors().forEach(v -> onUpdate(map.objectAt(v), v));
+        map.getRect().toVectors().forEach(v -> onTileUpdate(map.objectAt(v), v));
     }
 
-    public boolean update(){
-        snake.move();
-        return alive;
+    public void update(){
+        if(!paused)
+            snake.move();
     }
+
     public void onKeyPressed(KeyCode k){
-        Direction direction = Direction.keyKodeToDir(k);
-        if(direction != null)
-            snake.changeDirection(direction);
+        if(k.equals(KeyCode.P))
+            paused = !paused;
+        else {
+            if(paused) paused = false;
+            Direction direction = Direction.keyKodeToDir(k);
+            if (direction != null)
+                snake.changeDirection(direction);
+        }
     }
 
     public void addObserver(Observer observer) {
@@ -52,10 +59,10 @@ public class Engine implements MapObserver{
 
     @Override
     public void onKill() {
-        // restart game
-//        alive = false;
-        currLvl = 0;
+        currLvl = 1;
         progress = 0;
+        onLevelUpdate(currLvl);
+        onScoreUpdate(progress);
         map = new Map(width, height, this);
         snake = new Snake(map);
         initialize();
@@ -65,22 +72,35 @@ public class Engine implements MapObserver{
     @Override
     public void onProgress() {
         progress++;
-        if(progress > currLvl*2){
-            progress = 0;
+        onScoreUpdate(progress);
+        if(progress > currLvl*currLvl + 1){
             currLvl ++;
             onNewLevel();
         }
     }
 
     public void onNewLevel(){
-        System.out.println("now lvl " + currLvl);
+        onLevelUpdate(currLvl);
         map = new Map(width, height, this);
         snake.changeMap(map); // reset snake
         initialize();
     }
 
     @Override
-    public void onUpdate(IMapElement mapElement, Vector2d position) {
-        this.observers.forEach(ob -> ob.onUpdate(mapElement, position));
+    public void onTileUpdate(IMapElement mapElement, Vector2d position) {
+        this.observers.forEach(ob -> ob.onTileUpdate(mapElement, position));
     }
+
+    public void onScoreUpdate(int score) {
+        this.observers.forEach(ob -> ob.onScoreUpdate(score));
+    }
+
+    public void onLevelUpdate(int lvl) {
+        this.observers.forEach(ob -> ob.onLevelUpdate(lvl));
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
 }

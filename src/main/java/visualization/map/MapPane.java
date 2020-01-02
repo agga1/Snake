@@ -9,7 +9,7 @@ import visualization.ViewConfig;
 
 import static java.lang.Math.min;
 
-public class MapPane extends GridPane implements Observer {
+public class MapPane extends GridPane {
     private Tile[][] tiles;
 
     public MapPane(int width, int height) {
@@ -27,7 +27,7 @@ public class MapPane extends GridPane implements Observer {
         }
     }
 
-    public void onUpdate(IMapElement mapElement, Vector2d position){
+    public void onTileUpdate(IMapElement mapElement, Vector2d position){
         tiles[position.x][position.y].update(mapElement); // TODO swap needed?
     }
 }

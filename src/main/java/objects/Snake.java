@@ -40,6 +40,7 @@ public class Snake implements IMapElement {
 
     public void changeMap(Map map){
         shrink();
+        direction = Direction.RIGHT;
         this.map = map;
     }
 
@@ -52,6 +53,13 @@ public class Snake implements IMapElement {
     @Override
     public Icon getIcon() {
         return Icon.SNAKE;
+    }
+
+    @Override
+    public String toString() {
+        return "Snake{" +
+                "length=" + length +
+                '}';
     }
 
     @Override

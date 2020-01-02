@@ -6,6 +6,7 @@ import utils.Vector2d;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Map { // TODO Rect class for obstacles
@@ -25,17 +26,18 @@ public class Map { // TODO Rect class for obstacles
         for(Vector2d pos : mapElement.occupiedSpace()){
             allObjects.put(pos, mapElement); // dont care if sth was here before: overridden
             freeSpace.remove(pos);
-            notifyObserverOfChange(mapElement, pos);
+            notifyObserverOfChange(pos);
         }
     }
 
     public void onGrowApple(){
         if(freeSpace == null) return;
         Vector2d newApplePos = Vector2d.randomFromSet(freeSpace);
+        System.out.println("growing apple on pos "+ newApplePos );
         Apple apple = new Apple(newApplePos);
         freeSpace.remove(newApplePos);
         allObjects.put(newApplePos, apple);
-        notifyObserverOfChange(apple, newApplePos);
+        notifyObserverOfChange(newApplePos);
     }
 
     public void onSnakeMoved(Snake snake, Vector2d oldTail, Vector2d newHead){
@@ -45,18 +47,23 @@ public class Map { // TODO Rect class for obstacles
         freeSpace.remove(newHead);
         if(previous == null){
             allObjects.put(newHead, snake);
-            notifyObserverOfChange(snake, newHead);
-            notifyObserverOfChange(null, oldTail);
+            notifyObserverOfChange(newHead);
+            notifyObserverOfChange(oldTail);
         }
         else if(previous instanceof Apple){
             // eat apple and append the snake TODO notify?
             snake.eatApple(oldTail);
             allObjects.put(oldTail, snake);
             freeSpace.remove(oldTail);
-            notifyObserverOfChange(snake, newHead);
-            mapObserver.onProgress();
-            // create new apple
+            allObjects.put(newHead, snake);
+            notifyObserverOfChange(newHead);
             onGrowApple();
+            mapObserver.onProgress();
+        }
+        else if(previous instanceof BlueApple){
+            List<Vector2d> oldSnake = snake.occupiedSpace();
+            snake.shrink();
+            oldSnake.forEach(this::notifyObserverOfChange);
         }
         else { // div into obstacle and snake?
             // notify engine of game over
@@ -64,8 +71,8 @@ public class Map { // TODO Rect class for obstacles
         }
     }
 
-    public void notifyObserverOfChange(IMapElement mapElement, Vector2d position){
-        mapObserver.onUpdate(mapElement, position);
+    private void notifyObserverOfChange(Vector2d position){
+        mapObserver.onTileUpdate(allObjects.get(position), position);
     }
 
     public IMapElement objectAt(Vector2d position){

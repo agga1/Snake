@@ -20,6 +20,11 @@ public class Obstacle implements IMapElement {
     }
 
     @Override
+    public String toString() {
+        return "Obstacle";
+    }
+
+    @Override
     public List<Vector2d> occupiedSpace() {
         return occupiedSpace;
     }
