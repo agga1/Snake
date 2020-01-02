@@ -6,9 +6,11 @@ import java.util.List;
 
 public class BlueApple implements IMapElement{
     private Vector2d position;
+    private long birthday;
 
     public BlueApple(Vector2d position) {
         this.position = position;
+        this.birthday = System.currentTimeMillis();
     }
 
     @Override

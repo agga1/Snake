@@ -11,6 +11,7 @@ import utils.Vector2d;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Engine implements MapObserver{
     private Snake snake;
@@ -28,18 +29,24 @@ public class Engine implements MapObserver{
         map = new Map(width, height, this);
         snake = new Snake(map);
     }
+
     public void initialize(){
         paused = true;
+        map.reset();
         map.placeElement(snake);
         Obstacle obstacle = Levels.getInstance().getLevel(currLvl);
         map.placeElement(obstacle);
         map.onGrowApple();
-        map.getRect().toVectors().forEach(v -> onTileUpdate(map.objectAt(v), v));
     }
 
     public void update(){
-        if(!paused)
-            snake.move();
+        if(paused) return;
+        snake.move();
+        if(currLvl > 0){ // TODO change numbers
+            if( new Random().nextFloat() > 0.99){
+                map.onGrowBlueApple();
+            }
+        }
     }
 
     public void onKeyPressed(KeyCode k){
@@ -63,10 +70,8 @@ public class Engine implements MapObserver{
         progress = 0;
         onLevelUpdate(currLvl);
         onScoreUpdate(progress);
-        map = new Map(width, height, this);
         snake = new Snake(map);
         initialize();
-
     }
 
     @Override
@@ -81,8 +86,7 @@ public class Engine implements MapObserver{
 
     public void onNewLevel(){
         onLevelUpdate(currLvl);
-        map = new Map(width, height, this);
-        snake.changeMap(map); // reset snake
+        snake.changeLvl(); // reset snake
         initialize();
     }
 

@@ -1,5 +1,6 @@
 package visualization;
 
+// TODO make not settable
 public class GameConfig {
 
     public static final int WIDTH = 20;
