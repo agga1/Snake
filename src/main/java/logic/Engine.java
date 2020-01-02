@@ -14,16 +14,14 @@ import java.util.List;
 import java.util.Random;
 
 public class Engine implements MapObserver{
+    private static final int startSpeed = 30;
     private Snake snake;
     private Map map;
     private List<Observer> observers = new ArrayList<>();
     private boolean paused = false;
     private int progress = 0;
     private int currLvl = 1;
-    private int speed = 30;
-
-    private int width = 20;
-    private int height = 20;
+    private int speed = startSpeed;
 
     public Engine(int width, int height) {
         map = new Map(width, height, this);
@@ -68,6 +66,7 @@ public class Engine implements MapObserver{
     public void onKill() {
         currLvl = 1;
         progress = 0;
+        speed = startSpeed;
         onLevelUpdate(currLvl);
         onScoreUpdate(progress);
         snake = new Snake(map);
@@ -86,6 +85,7 @@ public class Engine implements MapObserver{
 
     public void onNewLevel(){
         onLevelUpdate(currLvl);
+        speed += currLvl;
         snake.changeLvl(); // reset snake
         initialize();
     }

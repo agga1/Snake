@@ -10,12 +10,12 @@ public class ScorePane extends VBox {
     private Text level;
 
     public ScorePane() {
-        this.score = new Text("score: 0");
         this.level = new Text("level: 1");
+        this.score = new Text("score: 0");
         setAlignment(Pos.CENTER_RIGHT);
         setPadding(new Insets(0, 20, 0, 0));
         setPrefHeight(30);
-        this.getChildren().addAll(score, level);
+        this.getChildren().addAll(level, score);
     }
 
     public void onScoreUpdate(int score) {
