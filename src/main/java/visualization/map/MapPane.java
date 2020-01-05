@@ -28,6 +28,6 @@ public class MapPane extends GridPane {
     }
 
     public void onTileUpdate(IMapElement mapElement, Vector2d position){
-        tiles[position.x][position.y].update(mapElement); // TODO swap needed?
+        tiles[position.x][position.y].update(mapElement);
     }
 }

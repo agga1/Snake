@@ -7,6 +7,7 @@ import utils.Vector2d;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Map {
     private Set<Vector2d> freeSpace = new HashSet<>();
@@ -74,9 +75,7 @@ public class Map {
     }
 
     public void reset(){
-//        Set<Vector2d> affected = allObjects.keySet(); // TODO why doesnt work?
-//        affected.forEach(this::freeSpace);
-        rect.toVectors().forEach(this::freeSpace);
+        new HashSet<>(allObjects.keySet()).forEach(this::freeSpace);
     }
 
     private void notifyObserverOfChange(Vector2d position){
