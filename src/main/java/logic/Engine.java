@@ -3,7 +3,9 @@ package logic;
 import javafx.scene.input.KeyCode;
 import levels.Level;
 import levels.LevelManager;
-import objects.*;
+import map.Map;
+import map.MapObserver;
+import mapobjects.*;
 import utils.Direction;
 import utils.Vector2d;
 
@@ -11,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Engine implements MapObserver{
+public class Engine implements MapObserver {
     private static final int startSpeed = 30;
 
     private Map map;
@@ -23,9 +25,9 @@ public class Engine implements MapObserver{
     private int progress = 0;
     private int currLvl = 1;
     private int speed = startSpeed;
-    private double blueAppleChance;
+    private double blueAppleChance = 0;
 
-    private List<Observer> observers = new ArrayList<>();
+    private List<EngineObserver> observers = new ArrayList<>();
 
     public Engine(int width, int height) {
         map = new Map(width, height, this);
@@ -49,11 +51,9 @@ public class Engine implements MapObserver{
     public void update(){
         if(paused) return;
         snake.move();
-        wasps.forEach(Wasp::move);
-        if(currLvl > 0){ // TODO change numbers
-            if( new Random().nextFloat() < blueAppleChance){
-                map.onGrowBlueApple();
-            }
+        wasps.forEach(Wasp::move); // TODO move to level.update()?
+        if( new Random().nextFloat() < blueAppleChance){ // -- also this
+            map.onGrowBlueApple();
         }
     }
 
@@ -68,17 +68,17 @@ public class Engine implements MapObserver{
         }
     }
 
-    public void addObserver(Observer observer) {
+    public void addObserver(EngineObserver observer) {
         this.observers.add(observer);
     }
 
     @Override
-    public void onKill() {
+    public void onKill() {  // TODO evoked from lvl? (lvl as map observer)
         currLvl = 1;
         progress = 0;
         speed = startSpeed;
-        onLevelUpdate(currLvl);
-        onScoreUpdate(progress);
+        notifyOfLevelUpdate(currLvl);
+        notifyOfScoreUpdate(progress);
         snake = new Snake(map);
         initialize();
     }
@@ -86,7 +86,7 @@ public class Engine implements MapObserver{
     @Override
     public void onProgress() {
         progress++;
-        onScoreUpdate(progress);
+        notifyOfScoreUpdate(progress);
         if(progress > currLvl*currLvl + 1){
             currLvl ++;
             onNewLevel();
@@ -94,7 +94,7 @@ public class Engine implements MapObserver{
     }
 
     public void onNewLevel(){
-        onLevelUpdate(currLvl);
+        notifyOfLevelUpdate(currLvl);
         speed += currLvl;
         snake.changeLvl(); // reset snake
         initialize();
@@ -105,11 +105,11 @@ public class Engine implements MapObserver{
         this.observers.forEach(ob -> ob.onTileUpdate(mapElement, position));
     }
 
-    public void onScoreUpdate(int score) {
+    public void notifyOfScoreUpdate(int score) {
         this.observers.forEach(ob -> ob.onScoreUpdate(score));
     }
 
-    public void onLevelUpdate(int lvl) {
+    public void notifyOfLevelUpdate(int lvl) {
         this.observers.forEach(ob -> ob.onLevelUpdate(lvl));
     }
 

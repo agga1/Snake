@@ -1,7 +1,7 @@
 package levels;
 
-import objects.Map;
-import objects.Obstacle;
+import map.Map;
+import mapobjects.Obstacle;
 import utils.Rect;
 import utils.Vector2d;
 

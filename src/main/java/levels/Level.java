@@ -1,8 +1,8 @@
 package levels;
 
-import objects.Map;
-import objects.Obstacle;
-import objects.Wasp;
+import map.Map;
+import mapobjects.Obstacle;
+import mapobjects.Wasp;
 import utils.Vector2d;
 
 import java.util.ArrayList;

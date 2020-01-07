@@ -2,7 +2,7 @@ package visualization;
 
 import javafx.scene.image.Image;
 
-import static visualization.resourceParser.parseImage;
+import static visualization.ImageParser.parseImage;
 
 public enum Icon {
     GRASS("grass.png"),
