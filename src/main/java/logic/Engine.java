@@ -2,10 +2,7 @@ package logic;
 
 import javafx.scene.input.KeyCode;
 import levels.Levels;
-import objects.IMapElement;
-import objects.Map;
-import objects.Obstacle;
-import objects.Snake;
+import objects.*;
 import utils.Direction;
 import utils.Vector2d;
 
@@ -16,6 +13,7 @@ import java.util.Random;
 public class Engine implements MapObserver{
     private static final int startSpeed = 30;
     private Snake snake;
+    private List<Wasp> wasps = new ArrayList<>();
     private Map map;
     private List<Observer> observers = new ArrayList<>();
     private boolean paused = false;
@@ -31,8 +29,10 @@ public class Engine implements MapObserver{
     public void initialize(){
         paused = true;
         map.reset();
+        wasps = Levels.getInstance().getWasps(currLvl, map);
+        wasps.forEach(w -> map.placeElement(w));
         map.placeElement(snake);
-        Obstacle obstacle = Levels.getInstance().getLevel(currLvl);
+        Obstacle obstacle = Levels.getInstance().getObstacles(currLvl);
         map.placeElement(obstacle);
         map.onGrowApple();
     }
@@ -40,6 +40,7 @@ public class Engine implements MapObserver{
     public void update(){
         if(paused) return;
         snake.move();
+        wasps.forEach(Wasp::move);
         if(currLvl > 0){ // TODO change numbers
             if( new Random().nextFloat() > 0.99){
                 map.onGrowBlueApple();

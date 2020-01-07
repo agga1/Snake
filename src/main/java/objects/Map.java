@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Map {
+public class Map implements AnimalObserver, SnakeObserver{
     private Set<Vector2d> freeSpace = new HashSet<>();
     private HashMap<Vector2d, IMapElement> allObjects = new HashMap<>();
     private MapObserver mapObserver;
@@ -50,7 +50,6 @@ public class Map {
         if(objectOnCollision != null){
             if(objectOnCollision instanceof Apple){
                 snake.eatApple();
-                onGrowApple();
                 mapObserver.onProgress();
             }
             else if(objectOnCollision instanceof BlueApple){
@@ -69,6 +68,8 @@ public class Map {
     }
 
     public void takeSpace(IMapElement mapElement, Vector2d position ){ // object takes up this position
+        if(objectAt(position) instanceof Apple)
+            onGrowApple();
         allObjects.put(position, mapElement);
         freeSpace.remove(position);
         notifyObserverOfChange(position);

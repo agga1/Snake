@@ -10,6 +10,7 @@ public enum Icon {
     BLUE_APPLE("blue_apple.png"),
     OBSTACLE("obstacle.png"),
     SNAKE_ICON("snake_icon.png"),
+    WASP("wasp.png"),
     SNAKE("snake.png");
     public final Image img;
 

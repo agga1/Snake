@@ -1,6 +1,8 @@
 package levels;
 
+import objects.Map;
 import objects.Obstacle;
+import objects.Wasp;
 import utils.Rect;
 import utils.Vector2d;
 
@@ -36,9 +38,18 @@ public class Levels {
         obstacles.add(new Obstacle(List.of(rect, rect2, rect3)));
     }
 
-    public Obstacle getLevel(int i){
-        i--;
-        if(i >= obstacles.size()) i = obstacles.size()-1;
-        return obstacles.get(i);
+    public Obstacle getObstacles(int lvl){
+        lvl--;
+        if(lvl >= obstacles.size()) lvl = obstacles.size()-1;
+        return obstacles.get(lvl);
+    }
+
+    public List<Wasp> getWasps(int lvl, Map map){
+        List<Wasp> wasps = new ArrayList<>();
+        int x = 18;
+        for(int i=1;i<lvl;i++){
+            wasps.add(new Wasp(new Vector2d(x--, 0), map));
+        }
+        return wasps;
     }
 }
