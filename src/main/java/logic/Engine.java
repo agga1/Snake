@@ -1,7 +1,8 @@
 package logic;
 
 import javafx.scene.input.KeyCode;
-import levels.Levels;
+import levels.Level;
+import levels.LevelManager;
 import objects.*;
 import utils.Direction;
 import utils.Vector2d;
@@ -12,28 +13,36 @@ import java.util.Random;
 
 public class Engine implements MapObserver{
     private static final int startSpeed = 30;
+
+    private Map map;
     private Snake snake;
     private List<Wasp> wasps = new ArrayList<>();
-    private Map map;
-    private List<Observer> observers = new ArrayList<>();
+
+    private LevelManager levelManager;
     private boolean paused = false;
     private int progress = 0;
     private int currLvl = 1;
     private int speed = startSpeed;
+    private double blueAppleChance;
+
+    private List<Observer> observers = new ArrayList<>();
 
     public Engine(int width, int height) {
         map = new Map(width, height, this);
+        levelManager = new LevelManager(map);
         snake = new Snake(map);
     }
 
     public void initialize(){
         paused = true;
         map.reset();
-        wasps = Levels.getInstance().getWasps(currLvl, map);
-        wasps.forEach(w -> map.placeElement(w));
+
+        Level level = levelManager.createLevel(currLvl);
+        wasps = level.initializeWasps();
+        level.initializeObstacle();
+        blueAppleChance = level.getBlueAppleChance();
+
         map.placeElement(snake);
-        Obstacle obstacle = Levels.getInstance().getObstacles(currLvl);
-        map.placeElement(obstacle);
         map.onGrowApple();
     }
 
@@ -42,7 +51,7 @@ public class Engine implements MapObserver{
         snake.move();
         wasps.forEach(Wasp::move);
         if(currLvl > 0){ // TODO change numbers
-            if( new Random().nextFloat() > 0.99){
+            if( new Random().nextFloat() < blueAppleChance){
                 map.onGrowBlueApple();
             }
         }
