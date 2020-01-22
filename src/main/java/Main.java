@@ -32,7 +32,6 @@ public class Main extends Application {
         game = new Thread(() -> {
             Runnable runnable = this::updateGame;
             while (!isDone) {
-//                engine.update();
                 try {
                     Thread.sleep(200-engine.getSpeed());
                 } catch (Exception ex) {
